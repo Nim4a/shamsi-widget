@@ -1,0 +1,7 @@
+/target
+/.cargo
+*.exe
+*.pdb
+__pycache__/
+*.old.exe
+.hermes/
