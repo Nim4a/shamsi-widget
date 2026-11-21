@@ -22,8 +22,17 @@ Persian text is shaped by **Windows GDI** (embedded Vazirmatn) and drawn as supe
 
 ## Download
 
-Grab `shamsi-widget-v1.0.0-win64.zip` from [Releases](../../releases) — it contains the exe and the tray icon.
+**Installer (recommended)** — `ShamsiWidget-Setup-1.0.0.exe` from [Releases](../../releases): per-user install
+(no administrator rights, no UAC prompt) into `%LOCALAPPDATA%\Programs\Shamsi Widget`, with optional desktop
+shortcut and “run at Windows startup”. Uninstall from *Apps & features* or the Start Menu — your colours and
+position in `%APPDATA%\ShamsiWidget` are kept, so a reinstall looks the same. The wizard is bilingual:
+**فارسی (default, RTL)** and English.
+
+**Portable** — `shamsi-widget-v1.0.0-win64.zip` from [Releases](../../releases) contains the exe and the tray icon.
 Unzip anywhere, run `shamsi_widget.exe`; the icon lives in the notification area (right side of the taskbar).
+
+Neither build has runtime dependencies; the first run may show “Windows protected your PC” because the exe is
+not code-signed → *More info* → *Run anyway*. That warning is expected and only appears once.
 
 ## Build
 
@@ -34,6 +43,16 @@ cargo build --release --offline   # x86_64-pc-windows-gnu toolchain
 - egui/eframe pinned to `=0.31.1`
 - `fonts/*.ttf` (Vazirmatn medium + bold) are **embedded at compile time**, nothing to install at runtime
 - `widget.ico` must sit next to the exe (the tray icon is loaded from disk)
+
+### Installer
+
+`installer/shamsi-widget.nsi` is a plain **NSIS 3** script (Unicode, per-user, LZMA-solid). Build it with the
+release exe, the icon and the README in one folder:
+
+```bash
+makensis /DSRCDIR=<folder with shamsi_widget.exe + widget.ico + README.md> installer/shamsi-widget.nsi
+# -> installer/ShamsiWidget-Setup-1.0.0.exe
+```
 
 ## فارسی
 
@@ -54,7 +73,18 @@ cargo build --release --offline   # x86_64-pc-windows-gnu toolchain
 - **متن فارسی نرم و واضح**: گلیف‌ها با GDI سه‌برابر رندر و بعد کوچک می‌شوند (سوپرسمپل) و روی گرید پیکسل واقعی اسنپ می‌شوند، برای همین پیکسلی/دندانه‌دار نیست
 - تنظیمات در `%APPDATA%\ShamsiWidget\settings.ini` ذخیره می‌شود
 
-**دانلود**: از بخش [Releases](../../releases) فایل `shamsi-widget-v1.0.0-win64.zip` را بگیرید (شامل exe و آیکون)، از حالت فشرده باز کنید و اجرا کنید.
+**دانلود**
+
+۱) **اینستالر (پیشنهادی)**: فایل `ShamsiWidget-Setup-1.0.0.exe` از بخش [Releases](../../releases) — نصب داخل حساب خودتان،
+بدون نیاز به دسترسی ادمین و بدون پنجرهٔ UAC. داخل `%LOCALAPPDATA%\Programs\Shamsi Widget` نصب می‌شود و
+میان‌بر دسکتاپ و «اجرا با ویندوز» را می‌پرسد. حذف نصب از *Apps & features* یا منوی استارت انجام می‌شود و
+تنظیمات شما در `%APPDATA%\ShamsiWidget` پاک نمی‌شود؛ پس بعد از نصب دوباره، همان رنگ و همان جای قبلی برمی‌گردد.
+زبان ویزارد: **فارسی** (پیش‌فرض، راست‌به‌چپ) و انگلیسی.
+
+۲) **نسخهٔ قابل‌حمل**: فایل `shamsi-widget-v1.0.0-win64.zip` (شامل exe و آیکون) — از حالت فشرده باز کنید و اجرا کنید.
+
+بار اول ویندوز ممکن است هشدار «Windows protected your PC» بدهد (چون فایل امضای دیجیتال ندارد) →
+*More info* و بعد *Run anyway*. هیچ وابستگی زمان‌اجرا لازم نیست.
 
 ## License
 
