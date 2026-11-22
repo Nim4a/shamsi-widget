@@ -39,7 +39,7 @@ VIAddVersionKey "LegalCopyright"  "MIT — ${PUBLISHER}"
 !define MUI_UNICON "${SRCDIR}\${ICONF}"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${EXE}"
-!define MUI_FINISHPAGE_RUN_TEXT "اجرای ویجت شمسی / Run Shamsi Widget"
+!define MUI_FINISHPAGE_RUN_TEXT "$(RUN_TEXT)"
 !define MUI_FINISHPAGE_NOREBOOTSUPPORT
 
 !insertmacro MUI_PAGE_WELCOME
@@ -56,7 +56,35 @@ VIAddVersionKey "LegalCopyright"  "MIT — ${PUBLISHER}"
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_RESERVEFILE_LANGDLL
 
+; ask for the language on the first screen; the choice is remembered per user
+!define MUI_LANGDLL_WINDOWTITLE "زبان نصب‌کننده / Installer language"
+!define MUI_LANGDLL_INFO "زبان مورد نظر را انتخاب کنید یا فقط OK را بزنید. / Please select a language."
+!define MUI_LANGDLL_REGISTRY_ROOT "HKCU"
+!define MUI_LANGDLL_REGISTRY_KEY "Software\ShamsiWidget"
+!define MUI_LANGDLL_REGISTRY_VALUENAME "InstallerLanguage"
+
+Function .onInit
+  ; first run: preselect Farsi (1065) in the picker without writing the registry,
+  ; so the language dialog still shows; the choice is saved afterwards by MUI.
+  ReadRegStr $0 HKCU "Software\ShamsiWidget" "InstallerLanguage"
+  StrCmp $0 "" set_fa_default lang_pick
+set_fa_default:
+  StrCpy $LANGUAGE 1065
+lang_pick:
+  !insertmacro MUI_LANGDLL_DISPLAY
+FunctionEnd
+
 ; ---------- sections ----------
+LangString RUN_TEXT    ${LANG_FARSI}   "همین حالا ویجت شمسی اجرا شود."
+LangString RUN_TEXT    ${LANG_ENGLISH} "Run Shamsi Widget now."
+
+LangString NAME_APP    ${LANG_FARSI}   "فایل‌های برنامه (ویجت، آیکون، حذف نصب)"
+LangString NAME_APP    ${LANG_ENGLISH} "Program files (widget, icon, uninstaller)"
+LangString NAME_DESK   ${LANG_FARSI}   "میان‌بر روی دسکتاپ"
+LangString NAME_DESK   ${LANG_ENGLISH} "Desktop shortcut"
+LangString NAME_START  ${LANG_FARSI}   "اجرای خودکار با روشن شدن ویندوز"
+LangString NAME_START  ${LANG_ENGLISH} "Start with Windows"
+
 LangString DESC_APP    ${LANG_FARSI}   "فایل‌های اصلی ویجت، میان‌بر منوی استارت و برنامهٔ حذف نصب."
 LangString DESC_APP    ${LANG_ENGLISH} "Core widget files, Start Menu shortcut and the uninstaller."
 LangString DESC_DESK   ${LANG_FARSI}   "ساخت میان‌بر روی دسکتاپ."
@@ -64,7 +92,7 @@ LangString DESC_DESK   ${LANG_ENGLISH} "Create a desktop shortcut."
 LangString DESC_START  ${LANG_FARSI}   "ویجت هر بار با روشن شدن ویندوز اجرا شود."
 LangString DESC_START  ${LANG_ENGLISH} "Start the widget automatically when Windows starts."
 
-Section "Shamsi Widget  (فایل‌های برنامه)" SEC_APP
+Section "$(NAME_APP)" SEC_APP
   SectionIn RO
   ; stop a running copy so the files are not locked
   nsExec::ExecToLog 'taskkill /IM ${EXE} /F'
@@ -99,11 +127,11 @@ Section "Shamsi Widget  (فایل‌های برنامه)" SEC_APP
   WriteRegDWORD HKCU "${REGKEY}" "EstimatedSize" "$0"
 SectionEnd
 
-Section /o "Shamsi Widget  (دسکتاپ)" SEC_DESK
+Section /o "$(NAME_DESK)" SEC_DESK
   CreateShortCut "$DESKTOP\Shamsi Widget.lnk" "$INSTDIR\${EXE}" "" "$INSTDIR\${ICONF}" 0
 SectionEnd
 
-Section /o "Shamsi Widget  (اجرا با ویندوز)" SEC_START
+Section /o "$(NAME_START)" SEC_START
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "ShamsiWidget" '"$INSTDIR\${EXE}"'
 SectionEnd
 
